@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro - Estacionamento</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <img src="./assets/placa-estacionamento-estacionar-1.png" alt="">
+        <h1>ESTACIONAMENTO</h1>
+    </header>
+    <main>
+        <form action="" method="post">
+            <div class="info">
+                <label class="titulo">Nome</label>
+                <input type="text" id="nome">
+            </div>
+
+            <div class="info">
+                <label class="titulo">Nº da Placa</label>
+                <input type="text" id="placa">
+            </div>
+
+            <div class="info">
+                <label class="titulo">Senha</label>
+                <input type="text" id="senha">
+            </div>
+
+            <div>
+                <label>Preferencial</label>
+                <input type="checkbox" id="preferencial">
+            </div>
+
+            <div id="wich">
+                <label>Qual a preferencia?</label>
+                <select name="preferencias" id="preferencias">
+                    <option value="Selecione">Selecione</option>
+                    <option value="Cadeirante">Cadeirante</option>
+                    <option value="Gestante">Gestante</option>
+                    <option value="Idoso">Idoso</option>
+                    <option value="Cego">Cego</option>
+                </select>
+            </div>
+        </form>
+
+        <button id="cadastro" class="entr">Cadastrar</button>
+
+        <a href="./login.html">Já possui cadastro? Faça Login!</a>
+    </main>
+    <script src="cadastro.js"></script>
+</body>
+</html>

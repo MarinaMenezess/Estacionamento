@@ -1,52 +1,107 @@
 const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
-const db = require("./db_config"); // Importa a configuração do banco de dados
+const db = require("./db_config"); // Agora, importando corretamente o db_config.js
 
 const app = express();
 const port = 3000;
 
-// Middleware
+// Verificação de conexão
+db.connect((err) => {
+    if (err) {
+        console.error("Erro ao conectar ao banco de dados:", err);
+    } else {
+        console.log("Conectado ao banco de dados!");
+    }
+});
+
 app.use(cors());
 app.use(bodyParser.json());
-
-// Rota de cadastro
-app.post("/cadastro", async (req, res) => {
+// 🚗 **Rota de Cadastro**
+app.post("/cadastro", (req, res) => {
     const { nome, placa, senha, preferencial, preferencias } = req.body;
 
-    // Verifica se todos os campos obrigatórios estão presentes
     if (!nome || !placa || !senha) {
-        return res.status(400).json({
-            sucesso: false,
-            mensagem: "Nome, placa e senha são campos obrigatórios."
-        });
+        return res.status(400).json({ sucesso: false, mensagem: "Nome, placa e senha são obrigatórios." });
     }
 
-    try {
-        // Verifica se a placa já está cadastrada
-        const [results] = await db.query("SELECT * FROM cars WHERE placa = ?", [placa]);
+    const query = "SELECT * FROM cars WHERE placa = ?";
+    db.query(query, [placa], (err, results) => {
+        if (err) {
+            console.error("Erro ao verificar placa:", err);
+            return res.status(500).json({ sucesso: false, mensagem: "Erro ao verificar a placa. Tente novamente mais tarde." });
+        }
 
         if (results.length > 0) {
             return res.status(400).json({ sucesso: false, mensagem: "Essa placa já está cadastrada." });
         }
 
-        // Logando os dados recebidos
-        console.log("Cadastro recebido:", { nome, placa, senha, preferencial, preferencias });
+        // Insere os dados no banco de dados e registra o horário de entrada
+        const insertSql = "INSERT INTO cars (placa, motorista, senha, pref, entrada) VALUES (?, ?, ?, ?, NOW())";
+        db.query(insertSql, [placa, nome, senha, preferencial === "Sim" ? preferencias : ""], (err) => {
+            if (err) {
+                console.error("Erro ao cadastrar motorista:", err);
+                return res.status(500).json({ sucesso: false, mensagem: "Erro ao processar a solicitação. Tente novamente mais tarde." });
+            }
 
-        // Insere os dados no banco de dados
-        const sql = "INSERT INTO cars (placa, motorista, senha, pref) VALUES (?, ?, ?, ?)";
-        await db.query(sql, [placa, nome, senha, preferencial === "Sim" ? preferencias : ""]);
+            // Buscar os dados do usuário recém-cadastrado
+            db.query("SELECT * FROM cars WHERE placa = ?", [placa], (err, results) => {
+                if (err || results.length === 0) {
+                    console.error("Erro ao buscar dados do usuário:", err);
+                    return res.status(500).json({ sucesso: false, mensagem: "Erro ao buscar informações do usuário." });
+                }
 
-        // Resposta de sucesso
-        res.json({ sucesso: true, mensagem: "Cadastro realizado com sucesso!" });
-    } catch (error) {
-        // Caso ocorra um erro na query ou em algum outro ponto
-        console.error("Erro no banco de dados:", error);
-        res.status(500).json({ sucesso: false, mensagem: "Erro ao processar a solicitação." });
-    }
+                const usuario = results[0];
+
+                res.json({
+                    sucesso: true,
+                    mensagem: "Cadastro realizado com sucesso!",
+                    usuario: {
+                        nome: usuario.motorista,
+                        placa: usuario.placa,
+                        preferencial: usuario.pref,
+                        entrada: usuario.entrada
+                    }
+                });
+            });
+        });
+    });
 });
 
-// Inicializa o servidor
+// 🚪 **Rota de Login**
+app.post("/login", (req, res) => {
+    const { placa, senha } = req.body;
+
+    if (!placa || !senha) {
+        return res.status(400).json({ sucesso: false, mensagem: "Placa e senha são obrigatórios." });
+    }
+
+    db.query("SELECT * FROM cars WHERE placa = ? AND senha = ?", [placa, senha], (err, results) => {
+        if (err) {
+            console.error("Erro ao verificar login:", err);
+            return res.status(500).json({ sucesso: false, mensagem: "Erro ao processar a solicitação." });
+        }
+
+        if (results.length === 0) {
+            return res.status(400).json({ sucesso: false, mensagem: "Placa ou senha incorretos." });
+        }
+
+        const usuario = results[0];
+
+        res.json({
+            sucesso: true,
+            mensagem: "Login realizado com sucesso!",
+            usuario: {
+                nome: usuario.motorista,
+                placa: usuario.placa,
+                preferencial: usuario.pref,
+                entrada: usuario.entrada
+            }
+        });
+    });
+});
+
+// 🚀 **Inicializa o servidor**
 app.listen(port, () => {
     console.log(`Servidor rodando em http://localhost:${port}`);
 });

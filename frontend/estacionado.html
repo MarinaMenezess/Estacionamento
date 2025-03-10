@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Estacionamento</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <header>
@@ -12,11 +13,14 @@
     </header>
     <main>
         <h3>Você está aqui há</h3>
-        <h1 id="tempo">11:35</h1>
+        <h1 id="tempoEstacionado"></h1>
+        <p id="nomeUsuario"></p>
+        <p id="placaUsuario"></p>
+        <p id="preferenciaUsuario"></p>
 
-        <form action="post">
+        <form action="post" id="pagamentos">
             <h4>Seu tempo foi: </h4>
-
+            <h2 id="tempoEstacionado"></h2>
             <h4>Valor:</h4>
             <h3>$$</h3>
 
@@ -28,10 +32,12 @@
                 <option value="Débito">Débito</option>
             </select>
 
-            <button>Pagar</button>
+            <button class="entr">Pagar</button>
         </form>
 
-        <button>Sair</button>
+        <button class="entr" id="sair">Sair</button>
     </main>
+
+    <script src="estacionado.js"></script>
 </body>
 </html>

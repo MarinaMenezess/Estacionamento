@@ -1,19 +1,37 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Estacionamento</title>
+    <title>Lista de Carros</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <header>
-        <img src="" alt="">
-        <h1>ESTACIONAMENTO</h1>
+        <h1>Carros Estacionados</h1>
     </header>
     <main>
         <table>
-
+            <div class="preco-config">
+                <label for="valorHora">Valor por Hora (R$):</label>
+                <input type="number" id="valorHora" step="0.01" min="0">
+                <button id="salvarValor">Salvar</button>
+            </div>
+            
+            <thead>
+                <tr>
+                    <th>Placa</th>
+                    <th>Motorista</th>
+                    <th>Preferencial</th>
+                    <th>Entrada</th>
+                </tr>
+            </thead>
+            <tbody id="tabelaCarros">
+                <!-- Os carros serão adicionados aqui -->
+            </tbody>
         </table>
     </main>
+    
+    <script src="carros.js"></script>
 </body>
 </html>

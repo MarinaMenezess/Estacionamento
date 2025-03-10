@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,26 +8,30 @@
 </head>
 <body>
     <header>
-        <img src="./assets/placa-estacionamento-estacionar-1.png" alt="">
+        <img src="./assets/placa-estacionamento-estacionar-1.png" alt="Estacionamento">
         <h1>ESTACIONAMENTO</h1>
     </header>
     <main>
-        <form action="" method="get" id="login_form">
+        <form id="login_form">
             <div class="info">
                 <label class="titulo">Sua Placa</label>
-                <input type="text" id="placa">
+                <input type="text" id="placa" required>
             </div>
 
             <div class="info">
                 <label class="titulo">Senha</label>
-                <input type="text" id="senha">
+                <input type="password" id="senha" required>
+            </div>
+            <p id="mensagem"></p>
+
+            <div class="centr">
+                <button type="submit" class="entr">Entrar</button>
+                <a href="./cadastro.html">Ainda não possui uma conta? Faça Cadastro!</a>
             </div>
         </form>
 
-        <button id="login" class="entr">Entrar</button>
-
-        <a href="./cadastro.html">Ainda não possui uma conta? Faça Cadastro!</a>
-
     </main>
+
+    <script src="login.js"></script>
 </body>
 </html>

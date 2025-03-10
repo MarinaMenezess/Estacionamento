@@ -68,5 +68,13 @@ input{
 
 .info input{
     width: 35vw;
-    height: 4vh;
+    height: 5vh;
+}
+
+.centr{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
 }

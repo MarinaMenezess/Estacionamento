@@ -115,8 +115,26 @@ app.get("/carros", (req, res) => {
     });
 });
 
+app.post("/pagamento", (req, res) => {
+    const { placa, motorista, entrada, saida, tempo_total, valor_pago, forma_pagamento } = req.body;
 
-// 🚀 **Inicializa o servidor**
+    if (!placa || !motorista || !entrada || !saida || !tempo_total || !valor_pago || !forma_pagamento) {
+        return res.status(400).json({ sucesso: false, mensagem: "Todos os campos são obrigatórios." });
+    }
+
+    const query = "INSERT INTO transacoes (placa, motorista, entrada, saida, tempo_total, valor_pago, forma_pagamento) VALUES (?, ?, ?, ?, ?, ?, ?)";
+    db.query(query, [placa, motorista, entrada, saida, tempo_total, valor_pago, forma_pagamento], (err) => {
+        if (err) {
+            console.error("Erro ao registrar pagamento:", err);
+            return res.status(500).json({ sucesso: false, mensagem: "Erro ao processar pagamento." });
+        }
+
+        res.json({ sucesso: true, mensagem: "Pagamento registrado com sucesso!" });
+    });
+});
+
+
+// 🚀 Inicializa o servidor
 app.listen(port, () => {
     console.log(`Servidor rodando em http://localhost:${port}`);
 });

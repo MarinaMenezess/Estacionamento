@@ -101,6 +101,21 @@ app.post("/login", (req, res) => {
     });
 });
 
+// Rota para listar os carros cadastrados
+app.get("/carros", (req, res) => {
+    const query = "SELECT placa, motorista, pref, entrada, saida, tempo, valor FROM cars";
+    
+    db.query(query, (err, results) => {
+        if (err) {
+            console.error("Erro ao buscar carros:", err);
+            return res.status(500).json({ sucesso: false, mensagem: "Erro ao buscar carros." });
+        }
+        
+        res.json({ sucesso: true, carros: results });
+    });
+});
+
+
 // 🚀 **Inicializa o servidor**
 app.listen(port, () => {
     console.log(`Servidor rodando em http://localhost:${port}`);

@@ -115,65 +115,52 @@ app.get("/carros", (req, res) => {
     });
 });
 
+// 🚀 Rota para registrar pagamento
 app.post("/pagamento", (req, res) => {
-    const { placa, motorista, entrada, saida, tempo_total, valor_pago, forma_pagamento } = req.body;
-
-    if (!placa || !motorista || !entrada || !saida || !tempo_total || !valor_pago || !forma_pagamento) {
+    const { placa, data_entrada, data_saida, valor, tipo_pagamento } = req.body;
+ 
+    if (!placa || !data_entrada || !data_saida || !valor || !tipo_pagamento) {
         return res.status(400).json({ sucesso: false, mensagem: "Todos os campos são obrigatórios." });
     }
-
-    const query = "INSERT INTO transacoes (placa, motorista, entrada, saida, tempo_total, valor_pago, forma_pagamento) VALUES (?, ?, ?, ?, ?, ?, ?)";
-    db.query(query, [placa, motorista, entrada, saida, tempo_total, valor_pago, forma_pagamento], (err) => {
+ 
+    // Converte as datas para o formato aceito pelo MySQL
+    function formatarData(data) {
+        let date = new Date(data);
+        let ano = date.getFullYear();
+        let mes = String(date.getMonth() + 1).padStart(2, "0");
+        let dia = String(date.getDate()).padStart(2, "0");
+        let horas = String(date.getHours()).padStart(2, "0");
+        let minutos = String(date.getMinutes()).padStart(2, "0");
+        let segundos = String(date.getSeconds()).padStart(2, "0");
+        return `${ano}-${mes}-${dia} ${horas}:${minutos}:${segundos}`;
+    }
+ 
+    const entradaFormatada = formatarData(data_entrada);
+    const saidaFormatada = formatarData(data_saida);
+ 
+    console.log(`Data formatada: Entrada = ${entradaFormatada}, Saída = ${saidaFormatada}`);
+ 
+    // Inserir na tabela `transacoes`
+    const query = `
+        INSERT INTO transacoes (placa, data_entrada, data_saida, valor, pago, tipo_pagamento)
+        VALUES (?, ?, ?, ?, ?, ?)
+    `;
+ 
+    db.query(query, [placa, entradaFormatada, saidaFormatada, valor, true, tipo_pagamento], (err) => {
         if (err) {
             console.error("Erro ao registrar pagamento:", err);
             return res.status(500).json({ sucesso: false, mensagem: "Erro ao processar pagamento." });
         }
-
-        res.json({ sucesso: true, mensagem: "Pagamento registrado com sucesso!" });
-    });
-});
-
-// 🚀 Rota para registrar pagamento
-app.post("/pagamento", (req, res) => {
-    const { placa, tempo, valor, forma_pagamento } = req.body;
  
-    if (!placa || !tempo || !valor || !forma_pagamento) {
-        return res.status(400).json({ sucesso: false, mensagem: "Todos os campos são obrigatórios." });
-    }
- 
-    // Busca o horário de entrada do usuário
-    const buscarEntrada = "SELECT entrada FROM cars WHERE placa = ?";
-    db.query(buscarEntrada, [placa], (err, results) => {
-        if (err || results.length === 0) {
-            console.error("Erro ao buscar entrada:", err);
-            return res.status(500).json({ sucesso: false, mensagem: "Erro ao buscar horário de entrada." });
-        }
- 
-        const entrada = results[0].entrada;
-        const saida = new Date(); // Hora atual como saída
- 
-        // Inserir na tabela `transacoes`
-        const query = `
-            INSERT INTO transacoes (placa, data_entrada, data_saida, valor, pago, tipo_pagamento) 
-            VALUES (?, ?, ?, ?, ?, ?)
-        `;
- 
-        db.query(query, [placa, entrada, saida, valor, true, forma_pagamento], (err) => {
+        // Atualiza a saída no registro de `cars`
+        const atualizarSaida = "UPDATE cars SET saida = ? WHERE placa = ?";
+        db.query(atualizarSaida, [saidaFormatada, placa], (err) => {
             if (err) {
-                console.error("Erro ao registrar pagamento:", err);
-                return res.status(500).json({ sucesso: false, mensagem: "Erro ao processar pagamento." });
+                console.error("Erro ao atualizar saída:", err);
+                return res.status(500).json({ sucesso: false, mensagem: "Erro ao atualizar saída do carro." });
             }
  
-            // Atualiza a saída no registro de `cars`
-            const atualizarSaida = "UPDATE cars SET saida = ? WHERE placa = ?";
-            db.query(atualizarSaida, [saida, placa], (err) => {
-                if (err) {
-                    console.error("Erro ao atualizar saída:", err);
-                    return res.status(500).json({ sucesso: false, mensagem: "Erro ao atualizar saída do carro." });
-                }
- 
-                res.json({ sucesso: true, mensagem: "Pagamento registrado com sucesso!" });
-            });
+            res.json({ sucesso: true, mensagem: "Pagamento registrado com sucesso!" });
         });
     });
 });

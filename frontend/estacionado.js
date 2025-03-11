@@ -28,18 +28,18 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById("tempoEstacionado").innerText = tempoDecorrido;
         document.getElementById("pagamentos").style.display = "flex";
         document.getElementById("pagamentos").innerHTML = `
-<h4>Seu tempo foi:</h4>
-<h2>${tempoDecorrido}</h2>
-<h4>Valor:</h4>
-<h3 id="valorPagar">R$ ${valorAPagar}</h3>
- 
-            <label for="forma">Forma de Pagamento</label>
-<select name="paga" id="paga">
-<option value="Selecione">Selecione</option>
-<option value="dinheiro">Dinheiro</option>
-<option value="cartao">Cartão</option>
-<option value="pix">Pix</option>
-</select>
+            <h4>Seu tempo foi:</h4>
+            <h2>${tempoDecorrido}</h2>
+            <h4>Valor:</h4>
+            <h3 id="valorPagar">R$ ${valorAPagar}</h3>
+            
+                        <label for="forma">Forma de Pagamento</label>
+            <select name="paga" id="paga">
+            <option value="Selecione">Selecione</option>
+            <option value="dinheiro">Dinheiro</option>
+            <option value="cartao">Cartão</option>
+            <option value="pix">Pix</option>
+            </select>
  
             <button class="entr" id="botaoPagar">Pagar</button>
         `;
@@ -61,6 +61,7 @@ document.addEventListener("DOMContentLoaded", function () {
             };
  
             try {
+                console.log("Enviando pagamento para API:", dadosPagamento);
                 let response = await fetch("http://localhost:3000/pagamento", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },

@@ -78,3 +78,20 @@ input{
     justify-content: center;
     align-items: center;
 }
+
+#pagamentos {
+    display: none; /* Inicialmente oculto */
+    position: absolute; /* Posiciona sobre os outros elementos */
+    width: 40vw;
+    height: 60vh;
+    background-color: white; /* Cor de fundo semi-transparente */
+    color: black; /* Texto em branco */
+    border: 10px solid red;
+    border-radius: 10%;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center !important;
+    z-index: 1000; /* Garante que o formulário ficará acima dos outros elementos */
+    padding: 20px;
+    gap: 40px;
+}

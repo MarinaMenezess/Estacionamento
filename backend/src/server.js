@@ -133,6 +133,51 @@ app.post("/pagamento", (req, res) => {
     });
 });
 
+// 🚀 Rota para registrar pagamento
+app.post("/pagamento", (req, res) => {
+    const { placa, tempo, valor, forma_pagamento } = req.body;
+ 
+    if (!placa || !tempo || !valor || !forma_pagamento) {
+        return res.status(400).json({ sucesso: false, mensagem: "Todos os campos são obrigatórios." });
+    }
+ 
+    // Busca o horário de entrada do usuário
+    const buscarEntrada = "SELECT entrada FROM cars WHERE placa = ?";
+    db.query(buscarEntrada, [placa], (err, results) => {
+        if (err || results.length === 0) {
+            console.error("Erro ao buscar entrada:", err);
+            return res.status(500).json({ sucesso: false, mensagem: "Erro ao buscar horário de entrada." });
+        }
+ 
+        const entrada = results[0].entrada;
+        const saida = new Date(); // Hora atual como saída
+ 
+        // Inserir na tabela `transacoes`
+        const query = `
+            INSERT INTO transacoes (placa, data_entrada, data_saida, valor, pago, tipo_pagamento) 
+            VALUES (?, ?, ?, ?, ?, ?)
+        `;
+ 
+        db.query(query, [placa, entrada, saida, valor, true, forma_pagamento], (err) => {
+            if (err) {
+                console.error("Erro ao registrar pagamento:", err);
+                return res.status(500).json({ sucesso: false, mensagem: "Erro ao processar pagamento." });
+            }
+ 
+            // Atualiza a saída no registro de `cars`
+            const atualizarSaida = "UPDATE cars SET saida = ? WHERE placa = ?";
+            db.query(atualizarSaida, [saida, placa], (err) => {
+                if (err) {
+                    console.error("Erro ao atualizar saída:", err);
+                    return res.status(500).json({ sucesso: false, mensagem: "Erro ao atualizar saída do carro." });
+                }
+ 
+                res.json({ sucesso: true, mensagem: "Pagamento registrado com sucesso!" });
+            });
+        });
+    });
+});
+
 
 // 🚀 Inicializa o servidor
 app.listen(port, () => {

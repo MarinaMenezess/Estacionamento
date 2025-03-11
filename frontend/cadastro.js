@@ -45,6 +45,8 @@ document.addEventListener("DOMContentLoaded", function () {
             if (result.sucesso) {
                 document.getElementById("cadastroForm").reset();
                 toggleVisibility();
+
+                window.location.href = "estacionado.html";
             }
         } catch (error) {
             console.error("Erro ao cadastrar:", error);

@@ -115,56 +115,6 @@ app.get("/carros", (req, res) => {
     });
 });
 
-// 🚀 Rota para registrar pagamento
-app.post("/pagamento", (req, res) => {
-    const { placa, data_entrada, data_saida, valor, tipo_pagamento } = req.body;
- 
-    if (!placa || !data_entrada || !data_saida || !valor || !tipo_pagamento) {
-        return res.status(400).json({ sucesso: false, mensagem: "Todos os campos são obrigatórios." });
-    }
- 
-    // Converte as datas para o formato aceito pelo MySQL
-    function formatarData(data) {
-        let date = new Date(data);
-        let ano = date.getFullYear();
-        let mes = String(date.getMonth() + 1).padStart(2, "0");
-        let dia = String(date.getDate()).padStart(2, "0");
-        let horas = String(date.getHours()).padStart(2, "0");
-        let minutos = String(date.getMinutes()).padStart(2, "0");
-        let segundos = String(date.getSeconds()).padStart(2, "0");
-        return `${ano}-${mes}-${dia} ${horas}:${minutos}:${segundos}`;
-    }
- 
-    const entradaFormatada = formatarData(data_entrada);
-    const saidaFormatada = formatarData(data_saida);
- 
-    console.log(`Data formatada: Entrada = ${entradaFormatada}, Saída = ${saidaFormatada}`);
- 
-    // Inserir na tabela `transacoes`
-    const query = `
-        INSERT INTO transacoes (placa, data_entrada, data_saida, valor, pago, tipo_pagamento)
-        VALUES (?, ?, ?, ?, ?, ?)
-    `;
- 
-    db.query(query, [placa, entradaFormatada, saidaFormatada, valor, true, tipo_pagamento], (err) => {
-        if (err) {
-            console.error("Erro ao registrar pagamento:", err);
-            return res.status(500).json({ sucesso: false, mensagem: "Erro ao processar pagamento." });
-        }
- 
-        // Atualiza a saída no registro de `cars`
-        const atualizarSaida = "UPDATE cars SET saida = ? WHERE placa = ?";
-        db.query(atualizarSaida, [saidaFormatada, placa], (err) => {
-            if (err) {
-                console.error("Erro ao atualizar saída:", err);
-                return res.status(500).json({ sucesso: false, mensagem: "Erro ao atualizar saída do carro." });
-            }
- 
-            res.json({ sucesso: true, mensagem: "Pagamento registrado com sucesso!" });
-        });
-    });
-});
-
 
 // 🚀 Inicializa o servidor
 app.listen(port, () => {

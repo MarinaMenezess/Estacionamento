@@ -18,24 +18,20 @@
         <p id="placaUsuario"></p>
         <p id="preferenciaUsuario"></p>
 
-        <form action="post" id="pagamentos">
-            <h4>Seu tempo foi: </h4>
-            <h2 id="tempoEstacionado"></h2>
-            <h4>Valor:</h4>
-            <h3>$$</h3>
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>Placa</th>
+                    <th>Motorista</th>
+                    <th>Preferencial</th>
+                    <th>Entrada</th>
+                </tr>
+            </thead>
+            <tbody id="tabelaCarros">
+                <!-- Os carros serão adicionados aqui -->
+            </tbody>
+        </table>
 
-            <label for="forma">Forma de Pagamento</label>
-            <select name="paga" id="paga">
-                <option value="Selecione">Selecione</option>
-                <option value="Pix">Pix</option>
-                <option value="Crédito">Crédito</option>
-                <option value="Débito">Débito</option>
-            </select>
-
-            <button class="entr" id="botaoPagar">Pagar</button>
-        </form>
-
-        <button class="entr" id="sair">Sair</button>
     </main>
 
     <script src="estacionado.js"></script>
